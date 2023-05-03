@@ -2,7 +2,7 @@ import paths from "../../data/small_piece.json";
 import {
     Axis,
     AxisDragGizmo,
-    Color3,
+    Color3, Mesh,
     MeshBuilder,
     Scene,
     Space,
@@ -11,13 +11,14 @@ import {
     Vector3
 } from "@babylonjs/core";
 import {ObjectFrame} from "../geojson/types.ts";
+import timer from "../MainScene/Timer.ts";
+import {computeBezier} from "../utils/math.ts";
 
 const objectFrames = (paths as ObjectFrame[])
     .sort((a, b) => a.time_meas - b.time_meas);
-
-console.log(objectFrames.map(
-    it => (it.time_meas - objectFrames[0].time_meas) / (1000 * 1000)
-));
+objectFrames[objectFrames.length - 1].position.x = -110;
+objectFrames[objectFrames.length - 1].position.y = -310;
+objectFrames[objectFrames.length - 1].orientation = -0.5;
 
 export function renderObjectFrames(scene: Scene) {
     for (let i = 0; i < objectFrames.length; i++) {
@@ -50,43 +51,63 @@ export function renderObjectFrames(scene: Scene) {
     }
 }
 
-export function renderObjectFrame(scene: Scene, position: Vector3, velocity: Vector3, scale: Vector3) {
-    const box = MeshBuilder.CreateBox("objectFrame", {}, scene);
-    box.rotation = Vector3.Normalize(velocity);
-    box.scaling = scale;
-    box.position = position;
-    // const mat = new StandardMaterial("objectFrameMat", scene);
-    // mat.diffuseColor = Color3.Red().scale(i / objectFrames.length).add(Color3.Blue());
-    // box.material = mat;
-    // Create gizmo
-    const gizmoX = new AxisDragGizmo(box.getDirection(Axis.X), Color3.Red(), new UtilityLayerRenderer(scene));
-    const gizmoY = new AxisDragGizmo(box.getDirection(Axis.Y), Color3.Green(), new UtilityLayerRenderer(scene));
-    const gizmoZ = new AxisDragGizmo(box.getDirection(Axis.Z), Color3.Blue(), new UtilityLayerRenderer(scene));
-    gizmoX.attachedMesh = box;
-    gizmoY.attachedMesh = box;
-    gizmoZ.attachedMesh = box;
-}
+export class GameObject {
 
-function computeBezier(p1: Vector3, v1: Vector3, p2: Vector3, v2: Vector3, t: number)
-    : { position: Vector3; velocity: Vector3 }
-{
-    // 计算控制点
-    const control1 = p1.add(v1.scale(1 / 3));
-    const control2 = p2.subtract(v2.scale(1 / 3));
+    public static CreateDefault(): GameObject {
+        return new GameObject(objectFrames);
+    }
 
-    // 计算位置
-    const position = p1
-        .scale(Math.pow(1 - t, 3))
-        .add(control1.scale(3 * t * Math.pow(1 - t, 2)))
-        .add(control2.scale(3 * (1 - t) * Math.pow(t, 2)))
-        .add(p2.scale(Math.pow(t, 3)));
+    private readonly keyTimes: number[] = [];
+    public box: Mesh | null = null;
+    constructor(private objectFrames: ObjectFrame[]) {
+        console.assert(objectFrames.length >= 2);
+        this.keyTimes = objectFrames.map(it => it.time_meas / 1000);
+    }
+    public render(scene: Scene) {
+        const iAbsTime = timer.iAbsoluteTime;
+        if (iAbsTime < this.keyTimes[0] || iAbsTime > this.keyTimes[this.keyTimes.length - 1]) return;
+        let startIdx = 0;
+        for (; startIdx < this.keyTimes.length - 1; startIdx++) {
+            if (iAbsTime >= this.keyTimes[startIdx] && iAbsTime <= this.keyTimes[startIdx + 1]) break;
+        }
+        const endIdx = startIdx + 1;
+        const t = (iAbsTime - this.keyTimes[startIdx]) / (this.keyTimes[endIdx] - this.keyTimes[startIdx]);
+        const startFrame = this.objectFrames[startIdx];
+        const endFrame = this.objectFrames[endIdx];
+        const p1 = new Vector3(startFrame.position.x, startFrame.position.z, startFrame.position.y);
+        const p2 = new Vector3(endFrame.position.x, endFrame.position.z, endFrame.position.y);
+        const v1 = this.calcVelocity(startFrame);
+        const v2 = this.calcVelocity(endFrame);
+        const {position, velocity} = computeBezier(p1, v1, p2, v2, t);
+        const scale = new Vector3(startFrame.shape.x, startFrame.shape.z, startFrame.shape.y);
+        this.renderFrame(scene, position, velocity, scale);
+    }
 
-    // 计算速度
-    const velocity = control1
-        .subtract(p1)
-        .scale(3 * Math.pow(1 - t, 2))
-        .add(control2.subtract(control1).scale(6 * (1 - t) * t))
-        .add(p2.subtract(control2).scale(3 * Math.pow(t, 2)));
+    private calcVelocity(objectFrame: ObjectFrame) {
+        const theta = objectFrame.orientation;
+        const v = new Vector3(-Math.sin(theta), 0, Math.cos(theta));
+        return v.scale(objectFrame.velocity);
+    }
+    private renderFrame(scene: Scene, position: Vector3, velocity: Vector3, scale: Vector3) {
+        if (this.box === null) {
+            this.box = MeshBuilder.CreateBox("GameObject", {}, scene);
+            const gizmoX = new AxisDragGizmo(this.box.getDirection(Axis.X), Color3.Red(), new UtilityLayerRenderer(scene));
+            const gizmoY = new AxisDragGizmo(this.box.getDirection(Axis.Y), Color3.Green(), new UtilityLayerRenderer(scene));
+            const gizmoZ = new AxisDragGizmo(this.box.getDirection(Axis.Z), Color3.Blue(), new UtilityLayerRenderer(scene));
+            gizmoX.attachedMesh = this.box;
+            gizmoY.attachedMesh = this.box;
+            gizmoZ.attachedMesh = this.box;
+        }
+        // this.box.rotation = Vector3.Normalize(velocity);
+        this.box.scaling = scale;
+        this.box.position = position;
+        this.box.lookAt(this.box.position.add(velocity));
+        // this.box.rotate(Axis.Y, Math.acos(Vector3.Dot(velocity, Vector3.Forward())), Space.LOCAL);
+        // console.log(velocity, this.box.rotation);
+        // const mat = new StandardMaterial("objectFrameMat", scene);
+        // mat.diffuseColor = Color3.Red().scale(i / objectFrames.length).add(Color3.Blue());
+        // box.material = mat;
+        // Create gizmo
 
-    return { position, velocity };
+    }
 }
