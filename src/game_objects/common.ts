@@ -79,7 +79,7 @@ export function displayITime(scene: Scene) {
     textBlock.fontSize = 20;
     const rect = new GUI.Rectangle();
     rect.width = 0.2;
-    rect.height = "60px";
+    rect.height = "80px";
     rect.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     rect.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
     rect.addControl(textBlock);
@@ -88,6 +88,7 @@ export function displayITime(scene: Scene) {
     // Update FPS every frame
     scene.onBeforeRenderObservable.add(function () {
         textBlock.text = `iTime: ${(timer.iTime / 1000).toFixed(2)}`
-            + `\n${formatDate(timer.iDate, true)}`;
+            + `\n${formatDate(timer.iDate, true)}`
+            + `\nrate: ${timer.rate.toFixed(2)}`;
     });
 }

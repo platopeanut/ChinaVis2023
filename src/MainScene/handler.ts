@@ -49,6 +49,12 @@ export function onSceneReady(scene: Scene) {
                     followCamera.maxCameraSpeed = 20;
                     scene.activeCamera = followCamera;
                 }
+                else if (kbInfo.event.key === "ArrowLeft") {
+                    timer.downRate();
+                }
+                else if (kbInfo.event.key === "ArrowRight") {
+                    timer.upRate();
+                }
                 break;
         }
     });
