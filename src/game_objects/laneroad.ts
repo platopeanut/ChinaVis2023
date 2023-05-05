@@ -1,29 +1,41 @@
-import {Material, MeshBuilder, Scene, Space, StandardMaterial, Texture, Vector3} from "@babylonjs/core";
-import {FeatureCollection, LaneRoadProperties} from "../geojson/types.ts";
+import {Material, Mesh, MeshBuilder, Scene, Space, StandardMaterial, Texture, Vector3, Vector4} from "@babylonjs/core";
+import {FeatureCollection, LaneRoadProperties} from "../data_loader/types.ts";
 import laneRoadData from "../../data/laneroad10.json";
+import {xyzToVector3} from "../utils/math.ts";
 
 export function loadLaneRoads(scene: Scene) {
     const laneRoadMaterial = new StandardMaterial("laneRoadMat", scene)
     laneRoadMaterial.diffuseTexture = new Texture("/assets/textures/laneroad_texture2.jpg", scene);
+    laneRoadMaterial.diffuseTexture.wrapU = Texture.WRAP_ADDRESSMODE;
+    laneRoadMaterial.diffuseTexture.wrapV = Texture.WRAP_ADDRESSMODE;
     laneRoadMaterial.bumpTexture = new Texture("/assets/textures/road_normal.jpg", scene);
+    laneRoadMaterial.bumpTexture.wrapU = Texture.WRAP_ADDRESSMODE;
+    laneRoadMaterial.bumpTexture.wrapV = Texture.WRAP_ADDRESSMODE;
     const featureCollection = laneRoadData as FeatureCollection<LaneRoadProperties>
     for (const feature of featureCollection.features) {
         const geometry = feature.geometry;
         console.assert(geometry.type === "LineString");
-        for (let i = 0; i < geometry.coordinates.length - 1; i++) {
-            // xyz => xzy 在场景中使用y轴作为高度
-            const p1 = new Vector3(
-                geometry.coordinates[i][0],
-                geometry.coordinates[i][2],
-                geometry.coordinates[i][1],
-            );
-            const p2 = new Vector3(
-                geometry.coordinates[i + 1][0],
-                geometry.coordinates[i + 1][2],
-                geometry.coordinates[i + 1][1],
-            );
-            createLaneRoadSeg(p1, p2, 3.0, laneRoadMaterial, scene);
-        }
+        // 1.Only Head and Tail
+        // xyz => xzy 在场景中使用y轴作为高度
+        const p1 = xyzToVector3(geometry.coordinates[0]);
+        const p2 = xyzToVector3(geometry.coordinates[geometry.coordinates.length - 1]);
+        createLaneRoadSeg(p1, p2, 3.0, laneRoadMaterial, scene);
+
+        // 2.All
+        // for (let i = 0; i < geometry.coordinates.length - 1; i++) {
+        //     // xyz => xzy 在场景中使用y轴作为高度
+        //     const p1 = new Vector3(
+        //         geometry.coordinates[i][0],
+        //         geometry.coordinates[i][2],
+        //         geometry.coordinates[i][1],
+        //     );
+        //     const p2 = new Vector3(
+        //         geometry.coordinates[i + 1][0],
+        //         geometry.coordinates[i + 1][2],
+        //         geometry.coordinates[i + 1][1],
+        //     );
+        //     createLaneRoadSeg(p1, p2, 3.0, laneRoadMaterial, scene);
+        // }
     }
 }
 
@@ -46,7 +58,8 @@ function createLaneRoadSeg(p1: Vector3, p2: Vector3, width: number, material: Ma
         {
             width: width,
             height: height,
-            // sideOrientation: Mesh.DOUBLESIDE
+            frontUVs: new Vector4(0, 0, 1, height / 10),
+            sideOrientation: Mesh.DOUBLESIDE
         },
         scene
     );

@@ -1,4 +1,18 @@
 import {Vector3} from "@babylonjs/core";
+import {Vec3} from "../data_loader/behavior.ts";
+
+// xyz右手系转xzy左手系
+export function vec3ToVector3(vec3: Vec3) {
+    return new Vector3(vec3.x, vec3.z, -vec3.y);
+}
+
+export function xyzToVector3(xyz: [number, number, number]) {
+    return vec3ToVector3({
+        x: xyz[0],
+        y: xyz[1],
+        z: xyz[2]
+    });
+}
 
 export function computeBezier(p1: Vector3, v1: Vector3, p2: Vector3, v2: Vector3, t: number)
     : { position: Vector3; velocity: Vector3 }

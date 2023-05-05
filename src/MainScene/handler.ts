@@ -1,26 +1,24 @@
-import {FollowCamera, KeyboardEventTypes, Scene, Vector3} from "@babylonjs/core";
+import {KeyboardEventTypes, Scene} from "@babylonjs/core";
 import {createLights, createSkyBox, displayFPS, displayITime, displayPos} from "../game_objects/common.ts";
-import {createCamera} from "./camera.ts";
 import {creteGround} from "../game_objects/ground.ts";
-import {GameObject, renderObjectFrames} from "../game_objects/car.ts";
+import {renderObjectFrames} from "../game_objects/GameObject.ts";
 import {loadLaneRoads} from "../game_objects/laneroad.ts";
 import timer from "./Timer.ts";
+import GameObjectManager from "../game_objects/GameObjectManager.ts";
+import CameraManager from "../game_objects/CameraManager.ts";
 
 let isPaused = false;
-const car = GameObject.CreateDefault();
-
+const gameObjectManager: GameObjectManager = GameObjectManager.createDefault();
+export let cameraManager: CameraManager;
 export function onSceneReady(scene: Scene) {
     const canvas = scene.getEngine().getRenderingCanvas();
-    const followCamera = new FollowCamera("FollowCam", new Vector3(-10, 10, 0), scene);
-    const mainCamera = createCamera(scene);
-    mainCamera.position = new Vector3(35, 111, -135);
-    mainCamera.attachControl(canvas, true);
-    scene.activeCamera = mainCamera;
+    cameraManager = new CameraManager(scene, canvas);
     // init time
-    timer.baseTime = 1681316063099694 / 1000 - 3000;
+    timer.baseTime = gameObjectManager.startTime / 1000 - 1000;
+    timer.iTime = 22390 * 1000;
     // UI
     displayFPS(scene);
-    displayPos(scene, mainCamera);
+    displayPos(scene, cameraManager.mainCamera);
     displayITime(scene);
     // game objects
     createSkyBox(scene);
@@ -38,16 +36,10 @@ export function onSceneReady(scene: Scene) {
                     isPaused = !isPaused;
                 }
                 else if (kbInfo.event.key === "1") {
-                    scene.activeCamera = mainCamera;
+                    scene.activeCamera = cameraManager.mainCamera;
                 }
                 else if (kbInfo.event.key === "2") {
-                    followCamera.lockedTarget = car.box;
-                    followCamera.radius = 20;
-                    followCamera.heightOffset = 10;
-                    followCamera.rotationOffset = 0;
-                    followCamera.cameraAcceleration = 0.05;
-                    followCamera.maxCameraSpeed = 20;
-                    scene.activeCamera = followCamera;
+                    scene.activeCamera = cameraManager.followCamera;
                 }
                 else if (kbInfo.event.key === "ArrowLeft") {
                     timer.downRate();
@@ -65,6 +57,6 @@ export function onSceneReady(scene: Scene) {
 export function onRender(scene: Scene) {
     if (!isPaused) {
         timer.tick(scene.getEngine().getDeltaTime());
-        car.render(scene);
+        gameObjectManager.render(scene);
     }
 }

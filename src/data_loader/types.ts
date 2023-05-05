@@ -47,29 +47,5 @@ export interface StopLineRoadProperties extends Properties {
     fid: number
 }
 
-export interface ObjectFrame {
-    id: number
-    seq: number
-    is_moving: number
-    position: Position
-    shape: Shape
-    orientation: number
-    velocity: number
-    type: number
-    heading: number
-    time_meas: number
-}
-
-export interface Position {
-    x: number
-    y: number
-    z?: number
-}
-
-export interface Shape {
-    x: number
-    y: number
-    z: number
-}
 
 

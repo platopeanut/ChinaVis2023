@@ -8,6 +8,7 @@ class Timer {
     public downRate() {this._rate -= this._rateStep; }
 
     public get iTime() { return this._iTime; }
+    public set iTime(i: number) { this._iTime = i; }
     public get iAbsoluteTime() { return this._baseTime + this._iTime; }
     public get iDate() { return new Date(this.iAbsoluteTime + (3600000 * 8)); }
     public set baseTime(t: number) { this._baseTime = t; }
