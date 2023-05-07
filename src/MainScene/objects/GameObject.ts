@@ -1,4 +1,4 @@
-import paths from "../../data/small_piece.json";
+import paths from "../../../data/small_piece.json";
 import {
     ActionManager,
     Axis,
@@ -8,14 +8,12 @@ import {
     MeshBuilder,
     Scene,
     Space,
-    StandardMaterial,
     UtilityLayerRenderer,
     Vector3
 } from "@babylonjs/core";
-import timer from "../MainScene/Timer.ts";
 import {vec3ToVector3} from "../utils/math.ts";
-import {ObjectBehavior, OldObjectFrame} from "../data_loader/behavior.ts";
-import {cameraManager} from "../MainScene/handler.ts";
+import SceneManager from "../core/SceneManager.ts";
+import {ObjectBehavior, OldObjectFrame} from "./types.ts";
 
 const objectFrames = (paths as OldObjectFrame[])
     .sort((a, b) => a.time_meas - b.time_meas);
@@ -23,29 +21,29 @@ objectFrames[objectFrames.length - 1].position.x = -110;
 objectFrames[objectFrames.length - 1].position.y = -310;
 objectFrames[objectFrames.length - 1].orientation = -0.5;
 
-export function renderObjectFrames(scene: Scene) {
-    for (let i = 0; i < objectFrames.length; i++) {
-        const objectFrame = objectFrames[i];
-        const box = MeshBuilder.CreateBox(
-            `${objectFrame.time_meas}`,
-            {},
-            scene
-        );
-        box.rotate(Axis.Y, objectFrame.orientation, Space.WORLD);
-        box.scaling = vec3ToVector3(objectFrame.shape);
-        box.position = vec3ToVector3(objectFrame.position);
-        const mat = new StandardMaterial("carMat", scene);
-        mat.diffuseColor = Color3.Red().scale(i / objectFrames.length).add(Color3.Blue());
-        box.material = mat;
-        // Create gizmo
-        const gizmoX = new AxisDragGizmo(box.getDirection(Axis.X), Color3.Red(), new UtilityLayerRenderer(scene));
-        const gizmoY = new AxisDragGizmo(box.getDirection(Axis.Y), Color3.Green(), new UtilityLayerRenderer(scene));
-        const gizmoZ = new AxisDragGizmo(box.getDirection(Axis.Z), Color3.Blue(), new UtilityLayerRenderer(scene));
-        gizmoX.attachedMesh = box;
-        gizmoY.attachedMesh = box;
-        gizmoZ.attachedMesh = box;
-    }
-}
+// export function renderObjectFrames(scene: Scene) {
+//     for (let i = 0; i < objectFrames.length; i++) {
+//         const objectFrame = objectFrames[i];
+//         const box = MeshBuilder.CreateBox(
+//             `${objectFrame.time_meas}`,
+//             {},
+//             scene
+//         );
+//         box.rotate(Axis.Y, objectFrame.orientation, Space.WORLD);
+//         box.scaling = vec3ToVector3(objectFrame.shape);
+//         box.position = vec3ToVector3(objectFrame.position);
+//         const mat = new StandardMaterial("carMat", scene);
+//         mat.diffuseColor = Color3.Red().scale(i / objectFrames.length).add(Color3.Blue());
+//         box.material = mat;
+//         // Create gizmo
+//         const gizmoX = new AxisDragGizmo(box.getDirection(Axis.X), Color3.Red(), new UtilityLayerRenderer(scene));
+//         const gizmoY = new AxisDragGizmo(box.getDirection(Axis.Y), Color3.Green(), new UtilityLayerRenderer(scene));
+//         const gizmoZ = new AxisDragGizmo(box.getDirection(Axis.Z), Color3.Blue(), new UtilityLayerRenderer(scene));
+//         gizmoX.attachedMesh = box;
+//         gizmoY.attachedMesh = box;
+//         gizmoZ.attachedMesh = box;
+//     }
+// }
 
 export class GameObject {
     private readonly keyTimes: number[] = [];
@@ -61,8 +59,7 @@ export class GameObject {
     //     console.assert(objectFrames.length >= 2);
     //     this.keyTimes = objectFrames.map(it => it.time_meas / 1000);
     // }
-    public render(scene: Scene) {
-        const iAbsTime = timer.iAbsoluteTime;
+    public render(scene: Scene, iAbsTime: number) {
         if (iAbsTime < this.keyTimes[0] || iAbsTime > this.keyTimes[this.keyTimes.length - 1]) return;
         let startIdx = 0;
         for (; startIdx < this.keyTimes.length - 1; startIdx++) {
@@ -110,8 +107,8 @@ export class GameObject {
                 new ExecuteCodeAction(
                     ActionManager.OnPickTrigger,
                     () => {
-                        cameraManager.followCamera.lockedTarget = this.box;
-                        scene.activeCamera = cameraManager.followCamera;
+                        SceneManager.getInstance().cameraManager.followCamera.lockedTarget = this.box;
+                        scene.activeCamera = SceneManager.getInstance().cameraManager.followCamera;
                     }
                 )
             );

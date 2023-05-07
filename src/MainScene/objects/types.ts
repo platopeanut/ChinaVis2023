@@ -1,4 +1,4 @@
-import data from "../../data/behaviors.json";
+import data from "../../../data/behaviors.json";
 
 const objectBehaviors = data as ObjectBehavior[];
 export const sizeOfObjectBehaviors = objectBehaviors.length;

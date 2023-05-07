@@ -1,6 +1,6 @@
-import {loadObjectBehaviors, ObjectBehavior, sizeOfObjectBehaviors} from "../data_loader/behavior.ts";
 import {GameObject} from "./GameObject.ts";
 import {Scene} from "@babylonjs/core";
+import {loadObjectBehaviors, ObjectBehavior, sizeOfObjectBehaviors} from "./types.ts";
 
 class GameObjectManager {
     private readonly _gameObjects: GameObject[];
@@ -11,10 +11,9 @@ class GameObjectManager {
         this.startTime = Math.min(...objectBehaviors.map(it => it.startTime));
         this.endTime = Math.max(...objectBehaviors.map(it => it.endTime));
     }
-    public getGameObjectByIdx(idx: number) { return this._gameObjects[idx]; }
-    public render(scene: Scene) {
+    public render(scene: Scene, iAbsTime: number) {
         for (const gameObject of this._gameObjects) {
-            gameObject.render(scene);
+            gameObject.render(scene, iAbsTime);
         }
     }
     public static createDefault(startIdx= 0, endIdx=sizeOfObjectBehaviors): GameObjectManager {

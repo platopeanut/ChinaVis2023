@@ -1,5 +1,5 @@
 import {Vector3} from "@babylonjs/core";
-import {Vec3} from "../data_loader/behavior.ts";
+import {Vec3} from "../../data_loader/behavior.ts";
 
 // xyz右手系转xzy左手系
 export function vec3ToVector3(vec3: Vec3) {

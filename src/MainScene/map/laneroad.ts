@@ -1,6 +1,6 @@
 import {Material, Mesh, MeshBuilder, Scene, Space, StandardMaterial, Texture, Vector3, Vector4} from "@babylonjs/core";
-import {FeatureCollection, LaneRoadProperties} from "../data_loader/types.ts";
-import laneRoadData from "../../data/laneroad10.json";
+import {FeatureCollection, LaneRoadProperties} from "./types.ts";
+import laneRoadData from "../../../data/laneroad10.json";
 import {xyzToVector3} from "../utils/math.ts";
 
 export function loadLaneRoads(scene: Scene) {
