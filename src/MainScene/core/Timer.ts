@@ -6,8 +6,6 @@ class Timer {
     private _rate = 1.0;
     private readonly _rateStep = 0.1;
 
-    public constructor(private _scene: Scene) { this.registerKeyboardEvent(); }
-
     public get rate() { return this._rate; }
     private upRate() { this._rate += this._rateStep; }
     private downRate() {this._rate -= this._rateStep; }
@@ -19,14 +17,14 @@ class Timer {
     public set baseTime(t: number) { this._baseTime = t; }
     public tick(deltaTime: number) { this._iTime += deltaTime * this._rate; }
 
-    private registerKeyboardEvent() {
-        this._scene.onKeyboardObservable.add((kbInfo) => {
+    public static registerKeyboardEvent(timer: Timer, scene: Scene) {
+        scene.onKeyboardObservable.add((kbInfo) => {
             if (kbInfo.type === KeyboardEventTypes.KEYDOWN) {
                 if (kbInfo.event.key === "ArrowLeft") {
-                    this.downRate();
+                    timer.downRate();
                 }
                 else if (kbInfo.event.key === "ArrowRight") {
-                    this.upRate();
+                    timer.upRate();
                 }
             }
         });

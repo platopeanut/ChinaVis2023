@@ -20,7 +20,7 @@
 ### Timer
 通过以下方式获取到场景中的计时器
 ~~~typescript
-const timer = SceneManager.getInstance().timer;
+const timer = globalStates.timer.iTime;
 console.log(timer.iTime);               // 场景从加载开始到现在的毫秒数
 console.log(timer.iAbsoluteTime);       // 真实毫秒时间戳
 console.log(timer.iDate);               // 真实时间
@@ -30,7 +30,7 @@ console.log(timer.rate);                // 场景时间的流速（负数表示�
 ### 视野矩形区域
 通过以下方式获取到俯视的正交摄像机`OverlookCamera`的视野矩形区域
 ~~~typescript
-const rect = SceneManager.getInstance().cameraManager.overlookRect;
+const rect = globalStates.overlookRect;
 console.log(rect.left);
 console.log(rect.right);
 console.log(rect.bottom);

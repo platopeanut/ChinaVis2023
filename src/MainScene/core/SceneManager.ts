@@ -3,6 +3,7 @@ import CameraManager from "./CameraManager.ts";
 import GameObjectManager from "../objects/GameObjectManager.ts";
 import Timer from "./Timer.ts";
 import {loadJson} from "../utils/util.ts";
+import globalStates from "../GlobalStates.ts";
 
 // Lazy Singleton
 class SceneManager {
@@ -21,7 +22,9 @@ class SceneManager {
     public constructor(private _scene: Scene) {
         this.cameraManager = new CameraManager(_scene);
         this.gameObjectManager = GameObjectManager.createDefault();
-        this.timer = new Timer(_scene);
+        // 绑定
+        this.timer = globalStates.timer;
+        Timer.registerKeyboardEvent(this.timer, _scene);
         loadJson<{
             startTime: number,
             endTime: number,
