@@ -1,9 +1,11 @@
 import {Vector3} from "@babylonjs/core";
-import {Vec3} from "../../data_loader/behavior.ts";
+import {Vec3} from "../objects/types.ts";
 
 // xyz右手系转xzy左手系
 export function vec3ToVector3(vec3: Vec3) {
     return new Vector3(vec3.x, vec3.z, -vec3.y);
+    // z -> 0
+    // return new Vector3(vec3.x, 0, -vec3.y);
 }
 
 export function xyzToVector3(xyz: [number, number, number]) {

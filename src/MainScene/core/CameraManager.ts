@@ -16,7 +16,7 @@ class CameraManager {
     public constructor(private _scene: Scene) {
         this.mainCamera = new UniversalCamera("MainCamera", new Vector3(0, 0, -10), this._scene);
         this.followCamera = new FollowCamera("FollowCamera", new Vector3(0, 10, 0), this._scene);
-        this.overlookCamera = new FreeCamera("OverlookCamera", new Vector3(0, 100, 0), this._scene);
+        this.overlookCamera = new UniversalCamera("OverlookCamera", new Vector3(0, 100, 0), this._scene);
         this.initMainCamera();
         this.initFollowCamera();
         this.initOverlookCamera();
@@ -44,8 +44,8 @@ class CameraManager {
         this.followCamera.maxCameraSpeed = 5;
     }
     private initOverlookCamera() {
-        // const canvas = this._scene.getEngine().getRenderingCanvas();
-        this.overlookCamera.attachControl(true);
+        const canvas = this._scene.getEngine().getRenderingCanvas();
+        this.overlookCamera.attachControl(canvas, true);
         this.overlookCamera.setTarget(Vector3.Zero());
         this.overlookCamera.mode = Camera.ORTHOGRAPHIC_CAMERA;
         const ratio = this._scene.getEngine().getRenderHeight() / this._scene.getEngine().getRenderWidth();

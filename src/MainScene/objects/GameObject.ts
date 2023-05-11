@@ -1,4 +1,3 @@
-import paths from "../../../data/small_piece.json";
 import {
     ActionManager,
     Axis,
@@ -13,37 +12,7 @@ import {
 } from "@babylonjs/core";
 import {vec3ToVector3} from "../utils/math.ts";
 import SceneManager from "../core/SceneManager.ts";
-import {ObjectBehavior, OldObjectFrame} from "./types.ts";
-
-const objectFrames = (paths as OldObjectFrame[])
-    .sort((a, b) => a.time_meas - b.time_meas);
-objectFrames[objectFrames.length - 1].position.x = -110;
-objectFrames[objectFrames.length - 1].position.y = -310;
-objectFrames[objectFrames.length - 1].orientation = -0.5;
-
-// export function renderObjectFrames(scene: Scene) {
-//     for (let i = 0; i < objectFrames.length; i++) {
-//         const objectFrame = objectFrames[i];
-//         const box = MeshBuilder.CreateBox(
-//             `${objectFrame.time_meas}`,
-//             {},
-//             scene
-//         );
-//         box.rotate(Axis.Y, objectFrame.orientation, Space.WORLD);
-//         box.scaling = vec3ToVector3(objectFrame.shape);
-//         box.position = vec3ToVector3(objectFrame.position);
-//         const mat = new StandardMaterial("carMat", scene);
-//         mat.diffuseColor = Color3.Red().scale(i / objectFrames.length).add(Color3.Blue());
-//         box.material = mat;
-//         // Create gizmo
-//         const gizmoX = new AxisDragGizmo(box.getDirection(Axis.X), Color3.Red(), new UtilityLayerRenderer(scene));
-//         const gizmoY = new AxisDragGizmo(box.getDirection(Axis.Y), Color3.Green(), new UtilityLayerRenderer(scene));
-//         const gizmoZ = new AxisDragGizmo(box.getDirection(Axis.Z), Color3.Blue(), new UtilityLayerRenderer(scene));
-//         gizmoX.attachedMesh = box;
-//         gizmoY.attachedMesh = box;
-//         gizmoZ.attachedMesh = box;
-//     }
-// }
+import {ObjectBehavior} from "./types.ts";
 
 export class GameObject {
     private readonly keyTimes: number[] = [];

@@ -1,9 +1,20 @@
-import {Material, Mesh, MeshBuilder, Scene, Space, StandardMaterial, Texture, Vector3, Vector4} from "@babylonjs/core";
+import {
+    Color3,
+    Material,
+    Mesh,
+    MeshBuilder,
+    Scene,
+    Space,
+    StandardMaterial,
+    Texture,
+    Vector3,
+    Vector4
+} from "@babylonjs/core";
 import {FeatureCollection, LaneRoadProperties} from "./types.ts";
-import laneRoadData from "../../../data/laneroad10.json";
 import {xyzToVector3} from "../utils/math.ts";
+import {loadJson} from "../utils/util.ts";
 
-export function loadLaneRoads(scene: Scene) {
+export async function loadLaneRoads(scene: Scene) {
     const laneRoadMaterial = new StandardMaterial("laneRoadMat", scene)
     laneRoadMaterial.diffuseTexture = new Texture("/assets/textures/laneroad_texture2.jpg", scene);
     laneRoadMaterial.diffuseTexture.wrapU = Texture.WRAP_ADDRESSMODE;
@@ -11,7 +22,9 @@ export function loadLaneRoads(scene: Scene) {
     laneRoadMaterial.bumpTexture = new Texture("/assets/textures/road_normal.jpg", scene);
     laneRoadMaterial.bumpTexture.wrapU = Texture.WRAP_ADDRESSMODE;
     laneRoadMaterial.bumpTexture.wrapV = Texture.WRAP_ADDRESSMODE;
-    const featureCollection = laneRoadData as FeatureCollection<LaneRoadProperties>
+    laneRoadMaterial.specularColor = new Color3(0.1, 0.1, 0.1);
+    const featureCollection
+        = await loadJson<FeatureCollection<LaneRoadProperties>>('/data/laneroad10.json');
     for (const feature of featureCollection.features) {
         const geometry = feature.geometry;
         console.assert(geometry.type === "LineString");

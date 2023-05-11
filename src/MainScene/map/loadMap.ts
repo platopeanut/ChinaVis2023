@@ -1,6 +1,6 @@
 import {Scene} from "@babylonjs/core";
 import {loadLaneRoads} from "./laneroad.ts";
 
-export function loadMap(scene: Scene) {
-    loadLaneRoads(scene);
+export async function loadMap(scene: Scene) {
+    await loadLaneRoads(scene);
 }

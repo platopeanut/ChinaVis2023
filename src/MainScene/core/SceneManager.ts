@@ -2,6 +2,7 @@ import {KeyboardEventTypes, Scene} from "@babylonjs/core";
 import CameraManager from "./CameraManager.ts";
 import GameObjectManager from "../objects/GameObjectManager.ts";
 import Timer from "./Timer.ts";
+import {loadJson} from "../utils/util.ts";
 
 // Lazy Singleton
 class SceneManager {
@@ -21,8 +22,14 @@ class SceneManager {
         this.cameraManager = new CameraManager(_scene);
         this.gameObjectManager = GameObjectManager.createDefault();
         this.timer = new Timer(_scene);
-        this.timer.baseTime = this.gameObjectManager.startTime / 1000 - 1000;
-        this.timer.iTime = 22390 * 1000;
+        loadJson<{
+            startTime: number,
+            endTime: number,
+            initITime: number
+        }>('/data/config.json').then(config => {
+            this.timer.baseTime = config.startTime / 1000 - 1000;
+            this.timer.iTime = config.initITime;
+        });
         this.registerKeyboardEvent();
     }
     public get scene() { return this._scene; }

@@ -6,9 +6,11 @@ import {loadMap} from "./map/loadMap.ts";
 
 export function onSceneReady(scene: Scene) {
     SceneManager.initInstance(scene);
-    loadUI(scene);
-    loadEnv(scene);
-    loadMap(scene);
+    (async () => {
+        loadUI(scene);
+        loadEnv(scene);
+        await loadMap(scene);
+    })().catch(console.error);
     return scene;
 }
 /**

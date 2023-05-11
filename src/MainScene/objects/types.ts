@@ -1,7 +1,4 @@
-import data from "../../../data/behaviors.json";
-
-const objectBehaviors = data as ObjectBehavior[];
-export const sizeOfObjectBehaviors = objectBehaviors.length;
+import {loadJson} from "../utils/util.ts";
 
 export interface ObjectBehavior {
     id: number                      // 物体ID
@@ -42,19 +39,7 @@ export enum ObjectType {
     Gate = 12           // 门、阀门、阀机、出入口
 }
 
-export interface OldObjectFrame {
-    id: number
-    seq: number
-    is_moving: number
-    position: Vec3
-    shape: Vec3
-    orientation: number
-    velocity: number
-    type: number
-    heading: number
-    time_meas: number
-}
-
-export function loadObjectBehaviors(startIdx: number, endIdx: number) {
-    return objectBehaviors.slice(startIdx, endIdx);
+export async function loadObjectBehaviors() {
+    const objectBehaviors = await loadJson<ObjectBehavior[]>('/data/behaviors.json');
+    return objectBehaviors.slice(0, objectBehaviors.length);
 }
