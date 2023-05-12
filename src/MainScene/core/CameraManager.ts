@@ -7,7 +7,6 @@ import {
     UniversalCamera,
     Vector3
 } from "@babylonjs/core";
-import globalStates, {RectArea} from "../GlobalStates.ts";
 
 class CameraManager {
     public readonly mainCamera: UniversalCamera;
@@ -23,15 +22,6 @@ class CameraManager {
         this.initOverlookCamera();
         this._scene.activeCamera = this.mainCamera;
         this.registerKeyboardEvent();
-        // 绑定
-        globalStates.overlookRectProducer = () => {
-            return {
-                left: this.overlookCamera.orthoLeft ?? 0,
-                right: this.overlookCamera.orthoRight ?? 0,
-                bottom: this.overlookCamera.orthoBottom ?? 0,
-                top: this.overlookCamera.orthoTop ?? 0
-            } as RectArea;
-        };
     }
     private initMainCamera() {
         const canvas = this._scene.getEngine().getRenderingCanvas();

@@ -1,5 +1,3 @@
-import {loadJson} from "../utils/util.ts";
-
 export interface ObjectBehavior {
     id: number                      // 物体ID
     type: ObjectType                // 物体类型
@@ -37,9 +35,4 @@ export enum ObjectType {
     Trolley = 10,       // 手推车、三轮车
     Robot = 11,         // 信号灯
     Gate = 12           // 门、阀门、阀机、出入口
-}
-
-export async function loadObjectBehaviors() {
-    const objectBehaviors = await loadJson<ObjectBehavior[]>('/data/behaviors.json');
-    return objectBehaviors.slice(0, objectBehaviors.length);
 }

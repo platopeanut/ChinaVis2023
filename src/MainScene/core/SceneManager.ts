@@ -2,8 +2,8 @@ import {KeyboardEventTypes, Scene} from "@babylonjs/core";
 import CameraManager from "./CameraManager.ts";
 import GameObjectManager from "../objects/GameObjectManager.ts";
 import Timer from "./Timer.ts";
-import {loadJson} from "../utils/util.ts";
-import globalStates from "../GlobalStates.ts";
+import SceneConfig from "../../share/SceneConfig.ts";
+import GlobalStates from "../../share/SharedStates.ts";
 
 // Lazy Singleton
 class SceneManager {
@@ -17,22 +17,16 @@ class SceneManager {
 
     public cameraManager: CameraManager;
     public gameObjectManager: GameObjectManager;
-    public timer: Timer;
+    public timer: Timer = new Timer();
     private _isPaused = false;
     public constructor(private _scene: Scene) {
         this.cameraManager = new CameraManager(_scene);
         this.gameObjectManager = GameObjectManager.createDefault();
         // 绑定
-        this.timer = globalStates.timer;
+        this.timer.baseTime = SceneConfig.startTime / 1000 - 1000;
+        this.timer.iTime = SceneConfig.initITime;
+        Timer.bindSubject(this.timer, GlobalStates.timer);
         Timer.registerKeyboardEvent(this.timer, _scene);
-        loadJson<{
-            startTime: number,
-            endTime: number,
-            initITime: number
-        }>('/data/config.json').then(config => {
-            this.timer.baseTime = config.startTime / 1000 - 1000;
-            this.timer.iTime = config.initITime;
-        });
         this.registerKeyboardEvent();
     }
     public get scene() { return this._scene; }

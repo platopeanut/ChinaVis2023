@@ -10,9 +10,8 @@ import {
     Vector3,
     Vector4
 } from "@babylonjs/core";
-import {FeatureCollection, LaneRoadProperties} from "./types.ts";
 import {xyzToVector3} from "../utils/math.ts";
-import {loadJson} from "../utils/util.ts";
+import {LaneRoadData} from "../../share/DataLoader.ts";
 
 export async function loadLaneRoads(scene: Scene) {
     const laneRoadMaterial = new StandardMaterial("laneRoadMat", scene)
@@ -23,9 +22,7 @@ export async function loadLaneRoads(scene: Scene) {
     laneRoadMaterial.bumpTexture.wrapU = Texture.WRAP_ADDRESSMODE;
     laneRoadMaterial.bumpTexture.wrapV = Texture.WRAP_ADDRESSMODE;
     laneRoadMaterial.specularColor = new Color3(0.1, 0.1, 0.1);
-    const featureCollection
-        // = await loadJson<FeatureCollection<LaneRoadProperties>>('/data/laneroad10.json');
-        = await loadJson<FeatureCollection<LaneRoadProperties>>('/data/laneroad_with9road.json');
+    const featureCollection = await LaneRoadData;
     for (const feature of featureCollection.features) {
         const geometry = feature.geometry;
         console.assert(geometry.type === "LineString");

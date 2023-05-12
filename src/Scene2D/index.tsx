@@ -1,8 +1,7 @@
-import SceneComponent from 'babylonjs-hook';
-import {onRender, onSceneReady} from "./handler.ts"; // if you install 'babylonjs-hook' NPM.
+import SceneComponent from "babylonjs-hook";
+import {onRender, onSceneReady} from "./handler.ts";
 
-
-function MainScene() {
+function Scene2D() {
     return <SceneComponent
         antialias
         onSceneReady={onSceneReady}
@@ -12,4 +11,4 @@ function MainScene() {
     />
 }
 
-export default MainScene;
+export default Scene2D;

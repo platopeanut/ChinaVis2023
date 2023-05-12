@@ -1,6 +1,6 @@
 import {GameObject} from "./GameObject.ts";
 import {Scene} from "@babylonjs/core";
-import {loadObjectBehaviors} from "./types.ts";
+import {ObjectBehaviorsData} from "../../share/DataLoader.ts";
 
 class GameObjectManager {
     private _gameObjects: GameObject[] = [];
@@ -14,7 +14,7 @@ class GameObjectManager {
     }
     public static createDefault(): GameObjectManager {
         const gameObjectManager = new GameObjectManager();
-        loadObjectBehaviors().then(objectBehaviors => {
+        ObjectBehaviorsData.then(objectBehaviors => {
             objectBehaviors.forEach(behavior => {
                 gameObjectManager.addGameObject(new GameObject(behavior));
             });
