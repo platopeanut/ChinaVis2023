@@ -23,4 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-public/data/behaviors.json
+/public/data/behaviors.json
+/public/data/laneroad_with9road.json

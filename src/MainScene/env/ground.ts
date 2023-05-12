@@ -16,7 +16,7 @@ export function creteGround(scene: Scene) {
     groundMaterial.bumpTexture.wrapV = Texture.WRAP_ADDRESSMODE;
     groundMaterial.roughness = 0.1;
     groundMaterial.specularColor = new Color3(0, 0, 0);
-    const size = 1000;
+    const size = 2000;
     const ground = MeshBuilder.CreatePlane("ground", {
         width: size,
         height: size,
